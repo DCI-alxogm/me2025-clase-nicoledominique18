@@ -1,0 +1,27 @@
+//Programa que determina si un número es par o impar
+#include <stdio.h>
+
+int main() {
+    int num;
+    char continuar;
+
+    do {
+        printf("Ingrese un numero entero: ");
+        scanf("%d", &num);
+
+        if (num % 2 == 0) 
+        {
+            printf("El numero %d es un número par.\n", num);
+        } else {
+            printf("El numero %d es un número impar.\n", num);
+        }
+
+        printf("Ingrese s si desea continuar y n si no desea continuar: ");
+        scanf(" %c", &continuar); 
+
+    } while (continuar == 's');
+
+    printf("Fin. \n");
+
+    return 0;
+}
