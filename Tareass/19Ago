@@ -25,3 +25,23 @@ int main() {
 
     return 0;
 }
+
+***************************** PSEUDOCODIGO **************************************************
+
+INICIO
+    REPETIR
+        MOSTRAR "Ingrese un número entero: "
+        LEER num
+
+        SI (num MOD 2 = 0) ENTONCES
+            MOSTRAR "El número ", num, " es un número par."
+        SINO
+            MOSTRAR "El número ", num, " es un número impar."
+        FIN_SI
+
+        MOSTRAR "Ingrese s si desea continuar y n si no desea continuar: "
+        LEER continuar
+    MIENTRAS continuar = 's'
+
+    MOSTRAR "Fin."
+FIN
