@@ -1,0 +1,68 @@
+Proceso Serie_Taylor
+		
+		Definir opcion, n, max, MAXI Como Entero
+		Definir x, h, termino, suma, error, epsilon Como Real
+		
+		MAXI <- 1000
+		suma <- 0
+		n <- 0
+		suma <- suma + termino
+		error <- abs(termino)
+		n <- n + 1
+		
+		Escribir "Seleccione la función que desee ejecutar:"
+		Escribir "1. e^x"
+		Escribir "2. sen(x)"
+		Escribir "3. cos(x)"
+		Escribir "4. ln(1 + x)"
+		Escribir "5. arctan(x)"
+		Leer opcion
+		
+		Escribir "Ingrese el valor de x:"
+		Leer x
+		
+		Escribir "Ingrese h:"
+		Leer h
+		
+		Escribir "Ingrese el error máximo permitido:"
+		Leer max
+		
+		
+	Segun opcion Hacer
+		Caso 1: // e^x
+			termino <- ((x - a)^n) / Factorial(n)
+			
+		Caso 2: // sen(x)
+			termino <- ((-1)^n * (x - a)^(2*n + 1)) / Factorial(2*n + 1)
+			
+		Caso 3: // cos(x)
+			termino <- ((-1)^n * (x - a)^(2*n)) / Factorial(2*n)
+			
+		Caso 4: // ln(1 + x)
+			Si n = 0 Entonces
+				termino <- 0
+			Sino
+				termino <- ((-1)^(n + 1) * (x - a)^n) / n
+			FinSi
+			
+		Caso 5: // arctan(x)
+			termino <- ((-1)^n * (x - a)^(2*n + 1)) / (2*n + 1)
+			
+		De Otro Modo:
+			Escribir "Opción inválida."
+	FinSegun
+	
+	Escribir "Resultado de la aproximación de la función: ", suma
+	Escribir "Número de términos utilizados: ", n
+	Escribir "Error final: ", error
+
+	FinProceso
+
+
+	Funcion resultado <- Factorial(n)
+		Definir resultado, i Como Real
+		resultado <- 1
+		Para i <- 1 Hasta n Con Paso 1 Hacer
+			resultado <- resultado * i
+		FinPara
+	FinFuncion
