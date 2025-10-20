@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+int main()
+{
+    int m=3, n=3, i, j, k;
+    float A[m][n], b[m], h, x[m];
+    
+    // matriz de coeficientes
+    A[0][0] = 3;    A[0][1] = -0.1;  A[0][2] = -0.2;  b[0] = 7.85;
+    A[1][0] = 0.1;  A[1][1] = 7;     A[1][2] = -0.3;  b[1] = -19.3;
+    A[2][0] = 0.3;  A[2][1] = 0.2;   A[2][2] = 10;    b[2] = 71.4;
+    
+    // eliminación gaussiana
+    for (k=0; k<m-1; k++){           
+        for (j=k+1; j<m; j++){       
+            h = A[j][k] / A[k][k];   
+            for (i=k; i<n; i++){     
+                A[j][i] -= h * A[k][i];
+            }
+            b[j] -= h * b[k];       
+        }
+    }
+    
+    // sustitución hacia atrás
+    x[m-1] = b[m-1] / A[m-1][m-1];
+    for (i=m-2; i>=0; i--){
+        x[i] = b[i];
+        for (j=i+1; j<n; j++){
+            x[i] -= A[i][j] * x[j];
+        }
+        x[i] /= A[i][i];
+    }
+    
+    // impresión de resultados
+    printf("Solución del sistema:\n");
+    for (i=0; i<m; i++){
+        printf("x%d = %.4f\n", i+1, x[i]);
+    }
+    
+    return 0;
+}
