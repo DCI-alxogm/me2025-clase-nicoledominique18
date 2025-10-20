@@ -1,0 +1,69 @@
+import numpy as np
+import scipy.optimize as opt
+
+# definición de funciones
+f1 = lambda x: np.sin(10 * x) - np.cos(3 * x)
+f2 = lambda x: np.exp(-x) - x
+f3 = lambda x: x**10 - 1
+f4 = lambda x: x**3 - 5 * (x**2) - 7 * x - 3
+
+# métodos y raíces
+r1 = opt.root_scalar(f1, bracket=[3, 5], method="bisect")
+
+r2n = opt.root_scalar(f2, x0=0, method="newton")
+r2s = opt.root_scalar(f2, x0=0, method="secant")
+
+r3n = opt.root_scalar(f3, x0=0.5, method="newton")
+r3s = opt.root_scalar(f3, x0=0.5, method="secant")
+
+r4n_0 = opt.root_scalar(f4, x0=0, method="newton")
+r4s_0 = opt.root_scalar(f4, x0=0, method="secant")
+
+r4n_4 = opt.root_scalar(f4, x0=4, method="newton")
+r4s_4 = opt.root_scalar(f4, x0=4, method="secant")
+
+# impresión de resultados
+print("f(x) = sin(10x) - cos(3x) en [3, 5], método de bisección")
+print("Resultado C: 4.470728 en 18 iteraciones")
+print("Resultado Python:")
+print(r1, "\n")
+
+print("f(x) = exp(-x) - x, x0 = 0, método de Newton")
+print("Resultado C: 0.567143290410 en 4 iteraciones")
+print("Resultado Python:")
+print(r2n, "\n")
+
+print("f(x) = exp(-x) - x, x0 = 0, método de la secante")
+print("Resultado C: 0.567143290410 en 5 iteraciones")
+print("Resultado Python:")
+print(r2s, "\n")
+
+print("f(x) = x^10 - 1, x0 = 0.5, método de Newton")
+print("Resultado C: No converge")
+print("Resultado Python:")
+print(r3n, "\n")
+
+print("f(x) = x^10 - 1, x0 = 0.5, método de la secante")
+print("Resultado C: 0.5 en 2 iteraciones")
+print("Resultado Python:")
+print(r3s, "\n")
+
+print("f(x) = x^3 - 5x^2 - 7x - 3, x0 = 0, método de Newton")
+print("Resultado C: -")
+print("Resultado Python:")
+print(r4n_0, "\n")
+
+print("f(x) = x^3 - 5x^2 - 7x - 3, x0 = 0, método de la secante")
+print("Resultado C: -")
+print("Resultado Python:")
+print(r4s_0, "\n")
+
+print("f(x) = x^3 - 5x^2 - 7x - 3, x0 = 4, método de Newton")
+print("Resultado C: No converge")
+print("Resultado Python:")
+print(r4n_4, "\n")
+
+print("f(x) = x^3 - 5x^2 - 7x - 3, x0 = 4, método de la secante")
+print("Resultado C: 6.140054944640 en 22 iteraciones")
+print("Resultado Python:")
+print(r4s_4)
