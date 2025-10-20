@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <math.h>
+
+float puntoFijo();
+float newtonRapson();
+float secante();
+float nrm();
+
+int main() {
+    printf("Método del punto fijo:\n");
+    puntoFijo();
+
+    printf("\n\nMétodo de Newton - Rapson:\n");
+    newtonRapson();
+
+    printf("\n\nMétodo de la secante:\n");
+    secante();
+
+    printf("\n\nMétodo de Newton - Rapson modificado:\n");
+    nrm();
+
+    return 0;
+}
+
+float puntoFijo() {
+    double xant = 0, g, error;
+    double errormax = 0.000001;
+    int iter = 0, itermax = 50;
+
+    printf("%-6s %-18s %-18s\n", "Iter", "x(i+1)", "Error");
+
+    do {
+        g = exp(-xant);
+        error = fabs((g - xant) / g) * 100;
+
+        printf("%-6d %-12.12f %-12.12f\n", iter, g, error);
+
+        xant = g;
+        iter++;
+
+    } while (error > errormax && iter <= itermax);
+
+    return 0;
+}
+
+float newtonRapson() {
+    double xant = 0, g, error;
+    double errormax = 0.000001;
+    int iter = 0, itermax = 50;
+
+    printf("%-6s %-18s %-18s\n", "Iter", "x(i+1)", "Error");
+
+    do {
+        g = xant + (exp(-xant) - xant) / (exp(-xant) + 1);
+        error = fabs((g - xant) / g) * 100;
+
+        printf("%-6d %-12.12f %-12.12f\n", iter, g, error);
+
+        xant = g;
+        iter++;
+
+    } while (error > errormax && iter <= itermax);
+
+    return 0;
+}
+
+float secante() {
+    double xant = 0, xi = 0.1, xpost;
+    double fi, fant, error;
+    double errormax = 0.000001;
+    int iter = 0, itermax = 50;
+
+    printf("%-6s %-18s %-18s\n", "Iter", "x(i+1)", "Error");
+
+    do {
+        fi = exp(-xi) - xi;
+        fant = exp(-xant) - xant;
+
+        xpost = xi - (fi * (xant - xi)) / (fant - fi);
+        error = fabs((xpost - xi) / xpost) * 100;
+
+        printf("%-6d %-12.12f %-12.12f\n", iter, xpost, error);
+
+        xant = xi;
+        xi = xpost;
+        iter++;
+
+    } while (error > errormax && iter <= itermax);
+
+    return 0;
+}
+
+float nrm() {
+    double xi = 0, xpost, error;
+    double f, fprim, fbiprim, u, uprim;
+    double errormax = 0.000001;
+    int iter = 0, itermax = 50;
+
+    printf("%-6s %-18s %-18s\n", "Iter", "x(i+1)", "Error");
+
+    do {
+        f = exp(-xi) - xi;
+        fprim = -exp(-xi) - 1;
+        fbiprim = exp(-xi);
+
+        u = f / fprim;
+        uprim = (pow(fprim, 2) - (f * fbiprim)) / pow(fprim, 2);
+
+        xpost = xi - (u / uprim);
+        error = fabs((xpost - xi) / xpost) * 100;
+
+        printf("%-6d %-12.12f %-12.12f\n", iter, xpost, error);
+
+        xi = xpost;
+        iter++;
+
+    } while (error > errormax && iter <= itermax);
+
+    return 0;
+}
