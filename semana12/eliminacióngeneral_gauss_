@@ -1,0 +1,194 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Prototipo de función para la lectura de datos
+int cargar_datos_desde_archivo(int filas, int columnas, float matriz_A[filas][columnas], float vector_b[filas], const char* ruta_archivo);
+
+int main(void)
+{
+    // Declaración de variables principales para dimensiones y bucles
+    int num_filas, num_cols;
+    int fila_idx, col_idx, paso_k;
+    float factor_multiplicador;
+    float determinante_A = 1.0f; // Inicializado como float
+
+    // 1. Definir dimensiones del sistema
+    printf("Ingrese el numero de filas y columnas (Ej: 3 3):\n");
+    if (scanf("%d %d", &num_filas, &num_cols) != 2 || num_filas <= 0 || num_cols <= 0) {
+        fprintf(stderr, "Error al leer las dimensiones de la matriz.\n");
+        return 1;
+    }
+    
+    // Declaración de arrays de tamaño variable (VLA - Variable Length Arrays)
+    float matriz_A[num_filas][num_cols];
+    float vector_b[num_filas];
+    float vector_temp[num_filas]; // Vector para intercambio de filas (pivote)
+    float vector_solucion[num_filas];
+    
+    // 2. Lectura de datos desde archivo
+    if (cargar_datos_desde_archivo(num_filas, num_cols, matriz_A, vector_b, "matriz.txt") != 0) {
+        return 1; // Salir si hay error de lectura
+    }
+    
+    // 3. Imprimir matriz aumentada inicial
+    printf("\n--- Matriz Aumentada Inicial ---\n");
+    for (fila_idx = 0; fila_idx < num_filas; fila_idx++) {
+        for (col_idx = 0; col_idx < num_cols; col_idx++) {
+            printf("%10.4f ", matriz_A[fila_idx][col_idx]);
+        }
+        printf("| %10.4f\n", vector_b[fila_idx]);
+    }
+    
+    // 4. Manejo Básico de Pivote Cero
+    // Solo verifica si el pivote A[i][i] es cero e intercambia con la fila i+1
+    for (fila_idx = 0; fila_idx < num_filas; fila_idx++) {
+        if (matriz_A[fila_idx][fila_idx] == 0.0f) {
+            
+            // Asegura que no se salga del límite de filas
+            if (fila_idx + 1 < num_filas) { 
+                
+                // Intercambio de la fila actual con la siguiente
+                for (paso_k = 0; paso_k < num_cols; paso_k++) {
+                    vector_temp[paso_k] = matriz_A[fila_idx][paso_k];
+                    matriz_A[fila_idx][paso_k] = matriz_A[fila_idx + 1][paso_k];
+                    matriz_A[fila_idx + 1][paso_k] = vector_temp[paso_k];
+                }
+                
+                // Intercambio de los términos del vector 'b'
+                vector_temp[0] = vector_b[fila_idx];
+                vector_b[fila_idx] = vector_b[fila_idx + 1];
+                vector_b[fila_idx + 1] = vector_temp[0];
+                
+                printf("\nIntercambio realizado entre Fila %d y Fila %d por pivote cero.\n", fila_idx + 1, fila_idx + 2);
+            } else {
+                fprintf(stderr, "\nERROR: Pivote cero en la última fila sin posibilidad de intercambio.\n");
+                // Podría salir aquí si fuera un caso crítico
+            }
+        }
+    }
+    
+    // 5. Imprimir matriz después de la modificación
+    printf("\n--- Matriz Aumentada Post-Pivoteo ---\n");
+    for (fila_idx = 0; fila_idx < num_filas; fila_idx++) {
+        for (col_idx = 0; col_idx < num_cols; col_idx++) {
+            printf("%10.4f ", matriz_A[fila_idx][col_idx]);
+        }
+        printf("| %10.4f\n", vector_b[fila_idx]);
+    }
+    
+    // 6. Eliminación Gaussiana (Triangularización Superior)
+    printf("\n--- Inicio de Eliminación Gaussiana ---\n");
+    for (paso_k = 0; paso_k < num_filas - 1; paso_k++) {
+        for (fila_idx = paso_k + 1; fila_idx < num_filas; fila_idx++) {
+            
+            // Cálculo del factor (multiplicador)
+            factor_multiplicador = matriz_A[fila_idx][paso_k] / matriz_A[paso_k][paso_k];
+            printf("Factor (%d,%d) = %.6f\n", fila_idx + 1, paso_k + 1, factor_multiplicador);
+            
+            // Operaciones en la fila actual
+            for (col_idx = paso_k; col_idx < num_cols; col_idx++) {
+                matriz_A[fila_idx][col_idx] -= factor_multiplicador * matriz_A[paso_k][col_idx];
+            }
+            
+            // Operación en el vector 'b'
+            vector_b[fila_idx] -= factor_multiplicador * vector_b[paso_k];
+        }
+    }
+    
+    // 7. Imprimir Matriz Triangular
+    printf("\n--- Matriz Triangular (Post-Gauss) ---\n");
+    for (fila_idx = 0; fila_idx < num_filas; fila_idx++) {
+        for (col_idx = 0; col_idx < num_cols; col_idx++) {
+            printf("%10.4f ", matriz_A[fila_idx][col_idx]);
+        }
+        printf("| %10.4f\n", vector_b[fila_idx]);
+    }
+    
+    // 8. Eliminación de Gauss-Jordan (Diagonalización)
+    printf("\n--- Inicio de Eliminación Gauss-Jordan ---\n");
+    for (paso_k = num_filas - 1; paso_k >= 0; paso_k--) { // Bucle de pasos al revés
+        for (fila_idx = paso_k - 1; fila_idx >= 0; fila_idx--) { // Filas por encima del pivote
+            
+            // Cálculo del factor (multiplicador)
+            factor_multiplicador = matriz_A[fila_idx][paso_k] / matriz_A[paso_k][paso_k];
+            printf("Factor_GJ (%d,%d) = %.6f\n", fila_idx + 1, paso_k + 1, factor_multiplicador);
+            
+            // Operaciones en la fila actual
+            for (col_idx = num_cols - 1; col_idx >= 0; col_idx--) {
+                matriz_A[fila_idx][col_idx] -= factor_multiplicador * matriz_A[paso_k][col_idx];
+            }
+            
+            // Operación en el vector 'b'
+            vector_b[fila_idx] -= factor_multiplicador * vector_b[paso_k];
+        }
+    }
+    
+    // 9. Imprimir Matriz Diagonal
+    printf("\n--- Matriz Diagonal (Post-Gauss-Jordan) ---\n");
+    for (fila_idx = 0; fila_idx < num_filas; fila_idx++) {
+        for (col_idx = 0; col_idx < num_cols; col_idx++) {
+            printf("%10.4f ", matriz_A[fila_idx][col_idx]);
+        }
+        printf("| %10.4f\n", vector_b[fila_idx]);
+    }
+    
+    // 10. Análisis del Determinante y Condicionamiento
+    for (fila_idx = 0; fila_idx < num_filas; fila_idx++) {
+        determinante_A *= matriz_A[fila_idx][fila_idx];
+    }
+    
+    printf("\nDeterminante (aproximado) = %.3f\n", determinante_A);
+    if (determinante_A < 0.1f && determinante_A > -0.1f) {
+        printf("El sistema podría estar MAL CONDICIONADO (det(A) cercano a cero).\n");
+    } else {
+        printf("El sistema está BIEN CONDICIONADO.\n");
+    }
+    
+    // 11. Cálculo de las Soluciones (Sustitución Regresiva Simplificada)
+    printf("\n--- Resultados (Vector Solucion) ---\n");
+    for (fila_idx = 0; fila_idx < num_filas; fila_idx++) {
+        // En Gauss-Jordan, la solución es simplemente b[i] / A[i][i]
+        vector_solucion[fila_idx] = vector_b[fila_idx] / matriz_A[fila_idx][fila_idx];
+        printf("x[%d] = %.6f\n", fila_idx + 1, vector_solucion[fila_idx]);
+    }
+
+    return 0;
+}
+
+
+// Implementación de la función de lectura
+int cargar_datos_desde_archivo(int filas, int columnas, float matriz_A[filas][columnas], float vector_b[filas], const char* ruta_archivo)
+{
+    FILE *p_archivo;
+    int i, j;
+    
+    p_archivo = fopen(ruta_archivo, "r");
+    if (p_archivo == NULL) {
+        fprintf(stderr, "\nERROR: No se pudo abrir el archivo de datos: %s\n", ruta_archivo);
+        return -1;
+    }
+    
+    // Lectura de la matriz A
+    for (i = 0; i < filas; i++) {
+        for (j = 0; j < columnas; j++) {
+            if (fscanf(p_archivo, "%f", &matriz_A[i][j]) != 1) {
+                fprintf(stderr, "\nERROR: Fallo leyendo elemento A[%d][%d]\n", i, j);
+                fclose(p_archivo);
+                return -1;
+            }
+        }
+    }
+    
+    // Lectura del vector b
+    for (i = 0; i < filas; i++) {
+        if (fscanf(p_archivo, "%f", &vector_b[i]) != 1) {
+            fprintf(stderr, "\nERROR: Fallo leyendo elemento b[%d]\n", i);
+            fclose(p_archivo);
+            return -1;
+        }
+    }
+    
+    fclose(p_archivo);
+    printf("\nDatos cargados correctamente desde: %s\n", ruta_archivo);
+    return 0;
+}
