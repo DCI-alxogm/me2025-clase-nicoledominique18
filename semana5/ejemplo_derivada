@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <math.h> // Se incluye para consistencia aunque no se use 'math.h' directamente aquí
+
+// Declaración de la función a derivar
+float calcular_funcion(float valor_x); 
+
+int main(void) {
+    // Definición de límites y espaciado
+    const float inicio_a = -2.0f;
+    const float fin_b = 2.0f;
+    const float paso_h = 0.25f;
+
+    // Cálculo del número de subintervalos y tamaño del array
+    int num_intervalos = (int)((fin_b - inicio_a) / paso_h);
+    int array_size = num_intervalos + 1;
+    
+    // Variables para el índice de los bucles
+    int idx;
+    
+    // Declaración de arreglos (VLA)
+    float valores_x[array_size];
+    float derivada_adelante[array_size]; // df/dx con diferencia hacia adelante (forward)
+    float derivada_atras[array_size];    // df/dx con diferencia hacia atrás (backward)
+    float derivada_centrada[array_size]; // df/dx con diferencia centrada
+    float segunda_derivada[array_size];  // d2f/dx2 con diferencia centrada
+    
+    // 1. Inicializar el arreglo de valores 'x'
+    printf("Calculando los valores de x:\n");
+    for (idx = 0; idx < array_size; idx++) {
+        valores_x[idx] = inicio_a + (float)idx * paso_h;
+        printf("x[%d] = %f\n", idx, valores_x[idx]);
+    }
+    
+    // 2. Cálculo de la PRIMERA DERIVADA (hacia adelante, atrás y centrada)
+    printf("\n--- Primera Derivada (f'(x)) ---\n");
+    printf("   x  \t| FWD (->)\t| BWD (<-)\t| CTR (<->)\n");
+    
+    for (idx = 0; idx < array_size; idx++) {
+        
+        // Hacia Adelante (Forward) - No se calcula para el último punto
+        if (idx < array_size - 1) {
+            derivada_adelante[idx] = (calcular_funcion(valores_x[idx + 1]) - calcular_funcion(valores_x[idx])) / paso_h;
+        } else {
+            derivada_adelante[idx] = 0.0f; // Asignar 0 o NAN para el punto final
+        }
+        
+        // Hacia Atrás (Backward) - No se calcula para el primer punto
+        if (idx > 0) {
+            derivada_atras[idx] = (calcular_funcion(valores_x[idx]) - calcular_funcion(valores_x[idx - 1])) / paso_h;
+        } else {
+            derivada_atras[idx] = 0.0f; // Asignar 0 o NAN para el punto inicial
+        }
+
+        // Centrada - No se calcula para el primer ni el último punto
+        if (idx > 0 && idx < array_size - 1) {
+            derivada_centrada[idx] = (calcular_funcion(valores_x[idx + 1]) - calcular_funcion(valores_x[idx - 1])) / (2.0f * paso_h);
+        } else {
+            derivada_centrada[idx] = 0.0f; // Asignar 0 o NAN
+        }
+
+        // Imprimir resultados parciales
+        printf("%7.2f \t| %9.6f \t| %9.6f \t| %9.6f\n", 
+               valores_x[idx], derivada_adelante[idx], derivada_atras[idx], derivada_centrada[idx]);
+    }
+    
+    // 3. Cálculo de la SEGUNDA DERIVADA (Diferencia Centrada)
+    printf("\n--- Segunda Derivada (f''(x)) ---\n");
+    printf("   x  \t| Segunda Derivada\n");
+
+    for (idx = 0; idx < array_size; idx++) {
+        
+        // Centrada (solo en puntos interiores)
+        if (idx > 0 && idx < array_size - 1) {
+            segunda_derivada[idx] = (calcular_funcion(valores_x[idx + 1]) - 2.0f * calcular_funcion(valores_x[idx]) + calcular_funcion(valores_x[idx - 1])) / (paso_h * paso_h);
+        } else {
+            segunda_derivada[idx] = 0.0f; // No se calcula en los extremos
+        }
+
+        printf("%7.2f \t| %9.6f\n", valores_x[idx], segunda_derivada[idx]);
+    }
+    
+    return 0;
+}
+
+// Implementación de la función original
+float calcular_funcion(float valor_x) {
+    float resultado;
+    // Función: f(x) = x³ - 2x + 4
+    resultado = valor_x * valor_x * valor_x - 2.0f * valor_x + 4.0f;
+    return resultado;
+}
