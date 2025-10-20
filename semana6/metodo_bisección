@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <math.h>
+
+int main() {
+    float a, b, fa, fb, fk;
+    float k, kant = 0, errorAprox = 100, errorEsp;
+    float g = 9.81, m = 68.1, v = 40, t = 10;
+    int iter = 0, maxIter = 100;
+
+    printf("Ingrese el rango (a b): ");
+    scanf("%f %f", &a, &b);
+    printf("Ingrese el error máximo permitido (%%): ");
+    scanf("%f", &errorEsp);
+
+    while (iter < maxIter && errorAprox > errorEsp) {
+
+        k = (a + b) / 2.0;
+
+        fa = (g * m / a) * (1 - exp(-a * t / m)) - v;
+        fb = (g * m / b) * (1 - exp(-b * t / m)) - v;
+        fk = (g * m / k) * (1 - exp(-k * t / m)) - v;
+
+        if (iter > 0) {
+            errorAprox = fabs((k - kant) / k) * 100.0;
+        }
+
+        printf("Iteración %d: a=%.4f, b=%.4f, f(a)=%.4f, f(b)=%.4f, Error=%.4f\n",
+               iter, a, b, fa, fb, errorAprox);
+
+        if (fa * fk < 0)
+            b = k;
+        else
+            a = k;
+
+        kant = k;
+        iter++;
+    }
+
+    return 0;
+}
