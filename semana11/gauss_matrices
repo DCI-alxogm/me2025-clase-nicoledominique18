@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <math.h>
+
+// Uso de const int en lugar de #define para las dimensiones
+const int NUM_FILAS = 2;
+const int NUM_COLUMNAS = 3;
+
+int main() {
+    // Declaración de la matriz
+    double matriz_aumentada[NUM_FILAS][NUM_COLUMNAS] = {
+        {1.0, 2.0, 10.0},
+        {1.1, 2.0, 10.4}
+    };
+
+    int i_fila, j_columna; // Variables para los bucles
+    
+    printf("Matriz original %dx%d:\n", NUM_FILAS, NUM_COLUMNAS);
+    
+    // Imprimir matriz original
+    for (i_fila = 0; i_fila < NUM_FILAS; i_fila++) {
+        for (j_columna = 0; j_columna < NUM_COLUMNAS; j_columna++) {
+            printf("%8g ", matriz_aumentada[i_fila][j_columna]);
+        }
+        printf("\n");
+    }
+    
+    // Determinar el número máximo de iteraciones de eliminación
+    int max_iteraciones = (NUM_FILAS < NUM_COLUMNAS) ? NUM_FILAS - 1 : NUM_COLUMNAS - 1;
+    
+    // Bucle principal de la eliminación (pasos)
+    for (int p_paso = 0; p_paso < max_iteraciones; p_paso++) {
+        
+        // Manejo de pivote cero
+        if (fabs(matriz_aumentada[p_paso][p_paso]) < 1e-10) {
+            
+            int fila_actualizar = -1;
+            int k_buscador; // Variable para buscar fila
+            
+            // Buscar una fila para intercambio
+            for (k_buscador = p_paso + 1; k_buscador < NUM_FILAS; k_buscador++) {
+                if (fabs(matriz_aumentada[k_buscador][p_paso]) > 1e-10) {
+                    fila_actualizar = k_buscador;
+                    break;
+                }
+            }
+            
+            // Realizar el intercambio de filas
+            if (fila_actualizar != -1) {
+                double temp_val;
+                
+                for (j_columna = 0; j_columna < NUM_COLUMNAS; j_columna++) {
+                    temp_val = matriz_aumentada[p_paso][j_columna];
+                    matriz_aumentada[p_paso][j_columna] = matriz_aumentada[fila_actualizar][j_columna];
+                    matriz_aumentada[fila_actualizar][j_columna] = temp_val;
+                }
+                
+                printf("\nSe intercambió Fila %d con Fila %d para evitar pivote cero.\n", p_paso + 1, fila_actualizar + 1);
+            } else {
+                printf("\nNo hay filas disponibles para intercambio. Deteniendo la eliminación.\n");
+                break; // Salir del bucle principal
+            }
+
+            // Imprimir matriz después del intercambio
+            for (i_fila = 0; i_fila < NUM_FILAS; i_fila++) {
+                for (j_columna = 0; j_columna < NUM_COLUMNAS; j_columna++) {
+                    printf("%8g ", matriz_aumentada[i_fila][j_columna]);
+                }
+                printf("\n");
+            }
+        }
+        
+        // Continuar con la eliminación (anulación de elementos debajo del pivote)
+        for (i_fila = p_paso + 1; i_fila < NUM_FILAS; i_fila++) {
+            double factor_mult = matriz_aumentada[i_fila][p_paso] / matriz_aumentada[p_paso][p_paso];
+            
+            for (j_columna = p_paso; j_columna < NUM_COLUMNAS; j_columna++) {
+                matriz_aumentada[i_fila][j_columna] -= factor_mult * matriz_aumentada[p_paso][j_columna];
+            }
+        }
+        
+        // Imprimir matriz después del paso de eliminación
+        printf("\nTras Eliminación en paso %d:\n", p_paso + 1);
+        for (i_fila = 0; i_fila < NUM_FILAS; i_fila++) {
+            for (j_columna = 0; j_columna < NUM_COLUMNAS; j_columna++) {
+                printf("%8g ", matriz_aumentada[i_fila][j_columna]);
+            }
+            printf("\n");
+        }
+    }
+
+    printf("\nMatriz Final (Gaussiana):\n");
+    
+    // Imprimir resultado final
+    for (i_fila = 0; i_fila < NUM_FILAS; i_fila++) {
+        for (j_columna = 0; j_columna < NUM_COLUMNAS; j_columna++) {
+            printf("%8g ", matriz_aumentada[i_fila][j_columna]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
