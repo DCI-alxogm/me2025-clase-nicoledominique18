@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <math.h>
+
+float metodoPuntoFijo();
+float metodoNewtonRaphson();
+
+int main() {
+    printf("metodo del punto fijo:\n");
+    metodoPuntoFijo();
+
+    printf("\n\nmetodo de newton-raphson:\n");
+    metodoNewtonRaphson();
+
+    return 0;
+}
+
+float metodoPuntoFijo() {
+    float xAnt = 0, g, error, errorMax = 0.0001;
+    int iter = 0, maxIter = 100;
+
+    printf("%-6s %-12s %-12s\n", "iter", "g(x)", "error");
+
+    do {
+        g = exp(-xAnt);
+        error = fabs((g - xAnt) / g) * 100;
+
+        printf("%-6d %-12.6f %-12.6f\n", iter, g, error);
+
+        xAnt = g;
+        iter++;
+
+    } while (error > errorMax && iter < maxIter);
+}
+
+float metodoNewtonRaphson() {
+    float xAnt = 0, g, error, errorMax = 0.0001;
+    int iter = 0, maxIter = 100;
+
+    printf("%-6s %-12s %-12s\n", "iter", "g(x)", "error");
+
+    do {
+        g = xAnt + ((exp(-xAnt) - xAnt) / (exp(-xAnt) + 1));
+        error = fabs((g - xAnt) / g) * 100;
+
+        printf("%-6d %-12.6f %-12.6f\n", iter, g, error);
+
+        xAnt = g;
+        iter++;
+
+    } while (error > errorMax && iter < maxIter);
+}
